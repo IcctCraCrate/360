@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>鷲嶺食肆360環景</title>
+
+  <!-- Pannellum：單檔，掛 global「pannellum」 -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.css">
+  <script src="https://cdn.jsdelivr.net/npm/pannellum@2.5.6/build/pannellum.js"></script>
+
+  <style>
+    body{margin:0;background:#0b0f14;color:#e6eaf0;font-family:system-ui,-apple-system,"Segoe UI",Roboto,"Noto Sans TC",Arial}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;padding:16px}
+    .thumb{border:none;padding:0;background:#111;border-radius:10px;overflow:hidden}
+    .thumb img{width:100%;height:120px;object-fit:cover;display:block}
+    .thumb span{display:block;padding:6px 8px;font-size:12px;text-align:center}
+    .modal{position:fixed;inset:0;background:#000;display:none}
+    .modal.open{display:block}
+    #viewer{position:absolute;inset:0}
+    .floating{position:absolute;top:10px;right:10px;z-index:10}
+    .btn{background:#1e293b;color:#fff;border:none;padding:8px 12px;border-radius:8px}
+    .pnlm-zoom-controls {    display: none !important;}
+  </style>
+</head>
+<body>
+  <div class="grid" id="thumbs">
+    <button class="thumb" data-src="./1.jpg" data-title="商店門口">
+      <img src="./1.jpg" alt=""><span>商店門口</span>
+    </button>
+    <button class="thumb" data-src="./2.jpg" data-title="和室">
+      <img src="./2.jpg" alt=""><span>和室</span>
+    </button>
+    <button class="thumb" data-src="./3.jpg" data-title="展間">
+      <img src="./3.jpg" alt=""><span>展間</span>
+    </button>
+    <button class="thumb" data-src="./4.jpg" data-title="座位區">
+      <img src="./4.jpg" alt=""><span>座位區</span>
+    </button>
+    <button class="thumb" data-src="./5.jpg" data-title="頂樓">
+      <img src="./5.jpg" alt=""><span>頂樓</span>
+    </button>
+  </div>
+
+  <div id="modal" class="modal" role="dialog" aria-modal="true">
+    <div class="floating"><button id="closeBtn" class="btn">返回</button></div>
+    <div id="viewer"></div>
+  </div>
+
+  <script>
+    let viewer = null;
+
+    function openViewer(src, title) {
+      // 開啟遮罩
+      document.getElementById('modal').classList.add('open');
+
+      // 如果已有 viewer，先清掉
+      if (viewer && viewer.destroy) { try { viewer.destroy(); } catch(e) {} viewer = null; }
+
+      // 以 Pannellum 建立 360 Viewer
+      viewer = pannellum.viewer('viewer', {
+        type: 'equirectangular',
+        panorama: src,
+        title: title || '',
+        autoLoad: true,         // 自動載入後顯示
+        showFullscreenCtrl: true,
+        showZoomCtrl: true,
+        compass: false,
+        hfov: 100               // 初始視角
+        // autoRotate: 2         // 若要自動旋轉，解除註解即可（單位：deg/s）
+      });
+    }
+
+    function closeViewer() {
+      document.getElementById('modal').classList.remove('open');
+      if (viewer && viewer.destroy) { try { viewer.destroy(); } catch(e) {} viewer = null; }
+    }
+
+    document.getElementById('thumbs').addEventListener('click', (e) => {
+      const btn = e.target.closest('.thumb');
+      if (!btn) return;
+      openViewer(btn.dataset.src, btn.dataset.title);
+    });
+
+    document.getElementById('closeBtn').addEventListener('click', closeViewer);
+  </script>
+</body>
+</html>
